@@ -24,15 +24,10 @@ class BasicCalc:
     def divide(a, b):
         return a / b
 
-    @staticmethod
-    def _number_checker(num_str):
-        if '.' in num_str:
-            return float(num_str)
-        else:
-            return int(num_str)
+
 
     @staticmethod
-    def calculator():
+    def calculate_user_input():
         math_operations = {
             '+': BasicCalc.add,
             '-': BasicCalc.subtract,
@@ -49,8 +44,8 @@ class BasicCalc:
             else:
                 print('Введено неверное выражение, повторите ввод')
 
-        first_num = BasicCalc._number_checker(string_to_match.group(1))
-        second_num = BasicCalc._number_checker(string_to_match.group(4))
+        first_num = string_to_match.group(1)
+        second_num = string_to_match.group(4)
         math_symbol = string_to_match.group(3)
 
         return math_operations.get(math_symbol)(first_num, second_num)
@@ -68,9 +63,7 @@ class CalcWithMemory(BasicCalc):
     def memo_plus(self, value):
         if len(self.memory) >= 3:
             self.memory.pop(0)
-            self.memory.append(value)
-        else:
-            self.memory.append(value)
+        self.memory.append(value)
 
     def memo_minus(self):
         return self.memory.pop()
@@ -79,7 +72,7 @@ class CalcWithMemory(BasicCalc):
     def add(self, a, b = None):
         if b is None:
             b = self.memory[-1]
-        result = a + b
+        result = super().add(a, b)
         self.memo_plus(result)
         return result
 
@@ -108,15 +101,6 @@ class CalcWithMemory(BasicCalc):
     def last_value(self):
         return self.memory[-1] if self.memory else None
 
-test = CalcWithMemory()
 
-test.add(5,5)
-# test.subtract(10, 5)
-# test.add(1,1)
-print(test.divide(10, ))
-
-print(test.memory)
-
-print(test.last_value)
 
 
