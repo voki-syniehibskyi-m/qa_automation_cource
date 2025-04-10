@@ -5,6 +5,7 @@ class ZeroDivisionCatcher(ZeroDivisionError):
         super().__init__(message)
 
 class BasicCalc:
+  
     @staticmethod
     def add(a, b=None):
         if b is None:
@@ -87,13 +88,14 @@ class CalcWithMemory(BasicCalc):
 
     def add(self, a, b = None):
         if b is None:
+
             if self.memory:
                 b = self.memory[-1]
             else:
                 raise ValueError('Второй аргумент не задан и память пуста.')
 
         a, b = map(self._number_validator, (a,b))
-        result = a + b
+        result = super().add(a, b)
         self.memo_plus(result)
         return result
 
@@ -146,4 +148,5 @@ class CalcWithMemory(BasicCalc):
         if not self.memory:
             raise IndexError('Память пуста, удалить нечего.')
         return self.memory[-1]
+
 
