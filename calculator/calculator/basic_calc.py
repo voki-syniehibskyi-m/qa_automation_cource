@@ -88,7 +88,7 @@ class CalcWithMemory(BasicCalc):
 
     def add(self, a, b = None):
         if b is None:
-                    b = self.memo_minus()
+            b = self.memo_minus()
         a, b = map(self._number_validator, (a,b))
         result = super().add(a, b)
         self.memo_plus(result)
@@ -96,11 +96,7 @@ class CalcWithMemory(BasicCalc):
 
     def subtract(self, a, b = None):
         if b is None:
-            if self.memory:
-                b = self.memory[-1]
-            else:
-                raise ValueError('Второй аргумент не задан и память пуста.')
-
+            b = self.memo_minus()
         a, b = map(self._number_validator, (a, b))
         result = a - b
         self.memo_plus(result)
@@ -123,13 +119,8 @@ class CalcWithMemory(BasicCalc):
 
     def multiply(self, a, b = None):
         if b is None:
-            if self.memory:
-                b = self.memory[-1]
-            else:
-                raise ValueError('Второй аргумент не задан и память пуста.')
-
+            b = self.memo_minus()
         a, b = map(self._number_validator, (a,b))
-
         result = a * b
         self.memo_plus(result)
         return result
@@ -140,7 +131,3 @@ class CalcWithMemory(BasicCalc):
             raise IndexError('Память пуста, удалить нечего.')
         return self.memory[-1]
 
-
-test = CalcWithMemory()
-
-test.add(1, 2)
