@@ -88,7 +88,7 @@ class CalcWithMemory(BasicCalc):
 
     def add(self, a, b = None):
         if b is None:
-            b = self.memo_minus()
+                    b = self.memo_minus()
         a, b = map(self._number_validator, (a,b))
         result = super().add(a, b)
         self.memo_plus(result)
