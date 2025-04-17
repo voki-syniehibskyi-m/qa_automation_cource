@@ -113,7 +113,7 @@ class CalcWithMemory(BasicCalc):
     def memo_minus(self):
         try:
             if not self.memory:
-                raise IndexError('Память пуста, нечего удалять')
+                raise IndexError('Память пуста, нечего удалить из памяти или взять')
             result = self.memory.pop()
             self._calc_logger('MemoMinus', None, result)
             return result
@@ -124,10 +124,7 @@ class CalcWithMemory(BasicCalc):
     def add(self, a, b=None):
         try:
             if b is None:
-                if self.memory:
-                    b = self.memory[-1]
-                else:
-                    raise ValueError('Второй аргумент не задан и память пуста.')
+                b = self.memo_minus()
             a, b = map(self._number_validator, (a, b))
             result = super().add(a, b)
             self.memo_plus(result)
@@ -139,10 +136,7 @@ class CalcWithMemory(BasicCalc):
     def subtract(self, a, b = None):
         try:
             if b is None:
-                if self.memory:
-                    b = self.memory[-1]
-                else:
-                    raise ValueError('Второй аргумент не задан и память пуста.')
+                b = self.memo_minus()
             a, b = map(self._number_validator, (a, b))
             result = super().subtract(a, b)
             self.memo_plus(result)
@@ -154,10 +148,7 @@ class CalcWithMemory(BasicCalc):
     def divide(self, a, b=None):
         try:
             if b is None:
-                if self.memory:
-                    b = self.memory[-1]
-                else:
-                    raise ValueError('Второй аргумент не задан и память пуста.')
+                b = self.memo_minus()
             a, b = map(self._number_validator, (a, b))
             if b == 0:
                 raise ZeroDivisionCatcher('Попытка деления на 0!')
@@ -177,10 +168,7 @@ class CalcWithMemory(BasicCalc):
     def multiply(self, a, b=None):
         try:
             if b is None:
-                if self.memory:
-                    b = self.memory[-1]
-                else:
-                    raise ValueError('Второй аргумент не задан и память пуста.')
+                b = self.memo_minus()
             a, b = map(self._number_validator, (a, b))
             result = super().multiply(a, b)
             self.memo_plus(result)
