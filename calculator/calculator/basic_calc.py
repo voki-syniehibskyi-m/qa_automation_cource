@@ -52,6 +52,7 @@ class ZeroDivisionCatcher(ZeroDivisionError):
 
 
 class BasicCalc:
+
     def _number_validator(self, a):
         return a if isinstance(a, (int, float)) else 0
 
@@ -59,6 +60,7 @@ class BasicCalc:
     def add(self, a, b=None):
         if a is None and b is None:
             raise ValueError('Оба аргумента отсутствуют')
+
         if b is None:
             if not hasattr(a, '__iter__'):
                 raise TypeError(f'Аргумент {a} не является итерируемым')
@@ -79,12 +81,14 @@ class BasicCalc:
         a, b = map(self._number_validator, (a, b))
         return a * b
 
+
     @log_method('Divide')
     def divide(self, a, b):
         a, b = map(self._number_validator, (a, b))
         if b == 0:
             raise ZeroDivisionCatcher()
         return a / b
+
 
     @log_method('CalculateUserInput')
     def calculate_user_input(self):
@@ -130,6 +134,7 @@ class CalcWithMemory(BasicCalc):
             raise IndexError('Память пуста, нечего удалить из памяти или взять')
         return self.memory.pop()
 
+
     @log_method('Add')
     def add(self, a, b=None):
         b = b if b else self.memo_minus()
@@ -152,6 +157,7 @@ class CalcWithMemory(BasicCalc):
         if result is not None:
             return self.memo_plus(result)
         return None
+
 
     @property
     @log_method('LastValue')
