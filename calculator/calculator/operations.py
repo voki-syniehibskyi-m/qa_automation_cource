@@ -62,6 +62,6 @@ def calculator():
     return math_operations.get(math_symbol)(first_num, second_num)
 
 if __name__ == "__main__":
-    calculator()
+    print(calculator())
 
 
