@@ -1,8 +1,6 @@
 import re
 from datetime import datetime
-from sre_constants import error
-from turtledemo.clock import datum
-import time
+
 
 
 # Логирование вынес вне калькулятора.
@@ -160,5 +158,4 @@ class CalcWithMemory(BasicCalc):
         if not self.memory:
             raise IndexError('Память пуста, нечего удалять')
         return self.memory[-1]
-
 
