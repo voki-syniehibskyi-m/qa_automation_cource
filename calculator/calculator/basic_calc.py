@@ -2,9 +2,8 @@ import re
 from datetime import datetime
 
 
-
-# Логирование вынес вне калькулятора.
 def calc_logger(operation, args, result=None, error=None):
+    """Записывает лог операции в файл."""
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_data = {
         'timestamp': timestamp,
@@ -22,8 +21,8 @@ def calc_logger(operation, args, result=None, error=None):
         log_file.write('\n')
 
 
-# Декоратор который поможет нам логировать вызываемые функции.
 def log_method(operation):
+    """Декоратор для логирования операций калькулятора."""
     def decorator(func):
         def wrapper(self, *args, log=True, **kwargs):
             if not log:
@@ -39,23 +38,33 @@ def log_method(operation):
             except Exception as e:
                 calc_logger(operation, args, error=str(e))
                 raise
-
         return wrapper
-
     return decorator
 
 
 class ZeroDivisionCatcher(ZeroDivisionError):
+    """Исключение для деления на ноль."""
     def __init__(self, message='На ноль делить не стоит, введите число > 0'):
         super().__init__(message)
 
 
 class BasicCalc:
+    """Базовый калькулятор с арифметическими операциями (Singleton)."""
+    _instance = None
+
+    def __new__(cls):
+        """Гарантирует создание только одного экземпляра."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def _number_validator(self, a):
+        """Проверяет, является ли аргумент числом."""
         return a if isinstance(a, (int, float)) else 0
 
     @log_method('Add')
     def add(self, a, b=None):
+        """Складывает два числа или элементы итерируемого объекта."""
         if a is None and b is None:
             raise ValueError('Оба аргумента отсутствуют')
         if b is None:
@@ -70,16 +79,19 @@ class BasicCalc:
 
     @log_method('Subtract')
     def subtract(self, a, b):
+        """Вычитает второе число из первого."""
         a, b = map(self._number_validator, (a, b))
         return a - b
 
     @log_method('Multiply')
     def multiply(self, a, b):
+        """Умножает два числа."""
         a, b = map(self._number_validator, (a, b))
         return a * b
 
     @log_method('Divide')
     def divide(self, a, b):
+        """Делит первое число на второе."""
         a, b = map(self._number_validator, (a, b))
         if b == 0:
             raise ZeroDivisionCatcher()
@@ -87,6 +99,7 @@ class BasicCalc:
 
     @log_method('CalculateUserInput')
     def calculate_user_input(self):
+        """Обрабатывает пользовательский ввод математического выражения."""
         math_operations = {
             '+': self.add,
             '-': self.subtract,
@@ -110,12 +123,24 @@ class BasicCalc:
 
 
 class CalcWithMemory(BasicCalc):
+    """Калькулятор с памятью, наследуется от BasicCalc (Singleton)."""
+    _instance = None
+
+    def __new__(cls):
+        """Гарантирует создание только одного экземпляра."""
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
+        """Инициализирует память калькулятора."""
         super().__init__()
-        self.memory = []
+        if not hasattr(self, 'memory'):
+            self.memory = []
 
     @log_method('MemoPlus')
     def memo_plus(self, value):
+        """Добавляет значение в память."""
         if not isinstance(value, (int, float)):
             raise ValueError(f'Сохранять можно только числа, получено {value}')
         if len(self.memory) >= 3:
@@ -125,27 +150,32 @@ class CalcWithMemory(BasicCalc):
 
     @log_method('MemoMinus')
     def memo_minus(self):
+        """Удаляет и возвращает последнее значение из памяти."""
         if not self.memory:
             raise IndexError('Память пуста, нечего удалить из памяти или взять')
         return self.memory.pop()
 
     @log_method('Add')
     def add(self, a, b=None):
+        """Складывает числа и сохраняет результат в память."""
         b = b if b else self.memo_minus()
         return self.memo_plus(super().add(a, b, log=False))
 
     @log_method('Subtract')
     def subtract(self, a, b=None):
+        """Вычитает числа и сохраняет результат в память."""
         b = b if b else self.memo_minus()
         return self.memo_plus(super().subtract(a, b, log=False))
 
     @log_method('Multiply')
     def multiply(self, a, b=None):
+        """Умножает числа и сохраняет результат в память."""
         b = b if b else self.memo_minus()
         return self.memo_plus(super().multiply(a, b, log=False))
 
     @log_method('Divide')
     def divide(self, a, b=None):
+        """Делит числа и сохраняет результат в память."""
         b = b if b else self.memo_minus()
         result = super().divide(a, b, log=False)
         if result is not None:
@@ -155,7 +185,28 @@ class CalcWithMemory(BasicCalc):
     @property
     @log_method('LastValue')
     def last_value(self):
+        """Возвращает последнее значение в памяти."""
         if not self.memory:
             raise IndexError('Память пуста, нечего удалять')
         return self.memory[-1]
 
+
+if __name__ == "__main__":
+    # Демонстрация Singleton
+    calc1 = BasicCalc()
+    calc2 = BasicCalc()
+    print(f"BasicCalc Singleton: {calc1 is calc2}")  # True
+
+    mem_calc1 = CalcWithMemory()
+    mem_calc2 = CalcWithMemory()
+    print(f"CalcWithMemory Singleton: {mem_calc1 is mem_calc2}")  # True
+
+    # Тест операций
+    print(f"Сложение: {calc1.add(5, 3)}")  # 8.0
+    print(f"Деление: {mem_calc1.divide(6, 2)}")  # 3.0
+    print(f"Память: {mem_calc1.last_value}")  # 3.0
+
+    # Тест пользовательского ввода
+    print("\nТестируем ввод (введите '5+3' или '5.2+3.1'):")
+    result = calc1.calculate_user_input()
+    print(f"Результат: {result}")
