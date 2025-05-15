@@ -34,7 +34,7 @@ def log_method(operation):
             except ZeroDivisionCatcher as e:
                 calc_logger(operation, args, error=str(e))
                 print(f'{e}')
-                return None
+                raise
             except Exception as e:
                 calc_logger(operation, args, error=str(e))
                 raise
@@ -81,7 +81,7 @@ class BasicCalc:
     def subtract(self, a, b):
         """Вычитает второе число из первого."""
         a, b = map(self._number_validator, (a, b))
-        return a - b
+        return a - b + 1
 
     @log_method('Multiply')
     def multiply(self, a, b):
@@ -178,9 +178,7 @@ class CalcWithMemory(BasicCalc):
         """Делит числа и сохраняет результат в память."""
         b = b if b else self.memo_minus()
         result = super().divide(a, b, log=False)
-        if result is not None:
-            return self.memo_plus(result)
-        return None
+        return self.memo_plus(result)
 
     @property
     @log_method('LastValue')
