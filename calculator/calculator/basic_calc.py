@@ -49,6 +49,7 @@ class ZeroDivisionCatcher(ZeroDivisionError):
 
 
 class BasicCalc:
+
     """Базовый калькулятор с арифметическими операциями (Singleton)."""
     _instance = None
 
@@ -57,6 +58,7 @@ class BasicCalc:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
+
 
     def _number_validator(self, a):
         """Проверяет, является ли аргумент числом."""
@@ -67,6 +69,7 @@ class BasicCalc:
         """Складывает два числа или элементы итерируемого объекта."""
         if a is None and b is None:
             raise ValueError('Оба аргумента отсутствуют')
+
         if b is None:
             if not hasattr(a, '__iter__'):
                 raise TypeError(f'Аргумент {a} не является итерируемым')
@@ -89,6 +92,7 @@ class BasicCalc:
         a, b = map(self._number_validator, (a, b))
         return a * b
 
+
     @log_method('Divide')
     def divide(self, a, b):
         """Делит первое число на второе."""
@@ -96,6 +100,7 @@ class BasicCalc:
         if b == 0:
             raise ZeroDivisionCatcher()
         return a / b
+
 
     @log_method('CalculateUserInput')
     def calculate_user_input(self):
@@ -155,6 +160,7 @@ class CalcWithMemory(BasicCalc):
             raise IndexError('Память пуста, нечего удалить из памяти или взять')
         return self.memory.pop()
 
+
     @log_method('Add')
     def add(self, a, b=None):
         """Складывает числа и сохраняет результат в память."""
@@ -179,6 +185,7 @@ class CalcWithMemory(BasicCalc):
         b = b if b else self.memo_minus()
         result = super().divide(a, b, log=False)
         return self.memo_plus(result)
+
 
     @property
     @log_method('LastValue')
