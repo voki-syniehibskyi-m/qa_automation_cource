@@ -1,5 +1,6 @@
 import time
 import sys
+import math
 
 
 sys.setrecursionlimit(3000)
@@ -55,5 +56,22 @@ def init_factorial_cache(max_n):
     """Инициализация кэша факториалов с помощью генератора."""
     for n, fact in factorial_generator(max_n):
         cached_factorial.cache_dict[n] = fact
+
+
+if __name__ == "__main__":
+    init_factorial_cache(100)
+    # factorial_generator(100)
+
+    with Timer():
+        print('Cached factorial')
+        cached_factorial(100)
+
+    with Timer():
+        print('Math factorial')
+        math.factorial(100)
+
+    with Timer():
+        print('recursion factorial')
+        factorial(100)
 
 
